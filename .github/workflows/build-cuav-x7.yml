@@ -1,4 +1,4 @@
-name: Build CUAV-X7 firmware
+name: Build GreenDerX7 firmware
 
 on:
   workflow_dispatch:
@@ -27,27 +27,27 @@ jobs:
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
       - name: Configure
-        run: ./waf configure --board CUAV-X7
+        run: ./waf configure --board GreenDerX7
 
       - name: Build bootloader
         run: |
-          ./waf configure --board CUAV-X7 --bootloader
+          ./waf configure --board GreenDerX7 --bootloader
           ./waf bootloader
 
       - name: Build firmware
         run: |
-          ./waf configure --board CUAV-X7
+          ./waf configure --board GreenDerX7
           ./waf ${{ inputs.vehicle }}
 
       - name: Collect artifacts
         run: |
           mkdir -p out
-          cp build/CUAV-X7/bin/* out/ 2>/dev/null || true
+          cp build/GreenDerX7/bin/* out/ 2>/dev/null || true
           ls -la out/
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CUAV-X7-${{ inputs.vehicle }}-firmware
+          name: GreenDerX7-${{ inputs.vehicle }}-firmware
           path: out/
           retention-days: 30
