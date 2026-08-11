@@ -1,5 +1,4 @@
 name: Build GreenDerX7 firmware
-
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +12,6 @@ on:
           - plane
           - rover
           - sub
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -22,29 +20,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-
       - name: Fix git safe directory
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
-
+      - name: Build bootloader
+        run: python3 Tools/scripts/build_bootloaders.py GreenDerX7
       - name: Configure
         run: ./waf configure --board GreenDerX7
-
-      - name: Build bootloader
-        run: |
-          ./waf configure --board GreenDerX7 --bootloader
-          ./waf bootloader
-
       - name: Build firmware
-        run: |
-          ./waf configure --board GreenDerX7
-          ./waf ${{ inputs.vehicle }}
-
+        run: ./waf ${{ inputs.vehicle }}
       - name: Collect artifacts
         run: |
           mkdir -p out
           cp build/GreenDerX7/bin/* out/ 2>/dev/null || true
+          cp Tools/bootloaders/GreenDerX7_bl.bin out/ 2>/dev/null || true
+          cp Tools/bootloaders/GreenDerX7_bl.hex out/ 2>/dev/null || true
           ls -la out/
-
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
